@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const res = await axios.post('https://skillconnect-server.onrender.com/api/users/login', { email, password });
       localStorage.setItem('token', res.data.token); // Store the token in localStorage
-      navigate('/api/users/me'); // Navigate to profile page after successful login
+      navigate('/profile'); // Navigate to profile page after successful login
     } catch (err) {
       setError('Invalid credentials');
     }
