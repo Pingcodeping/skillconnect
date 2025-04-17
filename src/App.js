@@ -29,7 +29,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/api/users/me" element={<Profile />} />
+        <Route path="https://skillconnect-server.onrender.com/api/users/me" element={<Profile />} />
       </Routes>
     </Router>
   );
