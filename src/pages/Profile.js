@@ -60,7 +60,7 @@ const Profile = () => {
         }
       );
       alert('Connection request sent!');
-      window.location.reload();
+      //window.location.reload();
     } catch (err) {
       console.error('Connect error:', err);
       alert('Failed to send request');
@@ -77,7 +77,7 @@ const Profile = () => {
         }
       );
       alert('Request accepted!');
-      window.location.reload();
+      //window.location.reload();
     } catch (err) {
       console.error('Accept error:', err);
       alert('Failed to accept request');
