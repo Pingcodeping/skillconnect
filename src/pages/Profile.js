@@ -18,6 +18,9 @@ const Profile = () => {
   const handleUserConnection = () => {
     navigate('/userconnections');
   };
+  const handleAllUsers = () =>{
+    navigate('/allusers');
+  };
   
 
   useEffect(() => {
@@ -131,12 +134,13 @@ const Profile = () => {
           >
             User Connections
           </button>
-          <a
-            href="/allusers"
+          <button
+           // href="/allusers"
+           onClick={handleAllUsers}
             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
           >
             All Users
-          </a>
+          </button>
         </div>
 
         {/* Profile Information */}
