@@ -2,7 +2,7 @@
   "name": "auth-democd",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "https://skillconnect-server.onrender.com",
   "dependencies": {
     "@tailwindcss/vite": "^4.0.3",
     "axios": "^1.7.9",

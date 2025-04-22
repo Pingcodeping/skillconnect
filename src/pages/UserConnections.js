@@ -32,23 +32,23 @@ const UserConnections = () => {
 
         const fetchData = async () => {
             try {
-                const meRes = await axios.get('http://localhost:5000/api/users/me', {
+                const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCurrentUser(meRes.data);
 
                 const connectionsRes = await axios.get(
-                    `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+                    `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
                 );
                 setConnections(connectionsRes.data);
 
-                const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
+                const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setAllUsers(allUsersRes.data);
 
                 // Fetch questions posted by the current user
-                const questionsRes = await axios.get('http://localhost:5000/api/questions', {
+                const questionsRes = await axios.get('https://skillconnect-server.onrender.com/api/questions', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setQuestions(questionsRes.data);
