@@ -136,7 +136,7 @@ const All_Users = () => {
             <NavbarLoggedIn />
             <div className="p-8">
                 <div className="mb-6">
-                    <button handlebacktoprofile className="text-blue-500 hover:text-blue-700 font-semibold">
+                    <button onClick={handlebacktoprofile} className="text-blue-500 hover:text-blue-700 font-semibold">
                         &larr; Back to Profile
                     </button>
                 </div>
