@@ -9,6 +9,7 @@ const Navbar = () => {
         <div className="space-x-4">
           <Link to="/login" className="text-white hover:text-gray-200">Login</Link>
           <Link to="/register" className="text-white hover:text-gray-200">Register</Link>
+          <Link to="/qa" className="text-white hover:text-gray-200">QandA</Link>
 
         </div>
       </div>

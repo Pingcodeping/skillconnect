@@ -8,6 +8,11 @@ const Profile = () => {
   const [connections, setConnections] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState([]); // State for storing questions
+  const [newQuestion, setNewQuestion] = useState({ title: '', body: '', tags: '' }); // State for new question
+  const [answerText, setAnswerText] = useState(''); // State for answering a question
+  const [questionId, setQuestionId] = useState(null); // State for the question being answered
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,24 +24,31 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
+        const meRes = await axios.get('http://localhost:5000/api/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(meRes.data);
 
         const connectionsRes = await axios.get(
-          `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+          `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
         );
         setConnections(connectionsRes.data);
 
-        const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
+        const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAllUsers(allUsersRes.data);
+
+        // Fetch questions posted by the current user
+        const questionsRes = await axios.get('http://localhost:5000/api/questions', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setQuestions(questionsRes.data);
       } catch (err) {
         console.error('Error fetching data:', err);
         setConnections([]);
         setAllUsers([]);
+        setQuestions([]);
       } finally {
         setLoading(false);
       }
@@ -50,131 +62,166 @@ const Profile = () => {
     navigate('/login');
   };
 
-  const handleConnect = async (targetId) => {
+  const handlePostQuestion = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post(
-        'https://skillconnect-server.onrender.com/api/users/connect',
-        { targetId },
+      const token = localStorage.getItem('token');
+      const res = await axios.post(
+        'http://localhost:5000/api/questions',
+        { ...newQuestion },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert('Connection request sent!');
-      //window.location.reload();
+      setQuestions([res.data, ...questions]); // Add the new question to the list
+      setNewQuestion({ title: '', body: '', tags: '' }); // Clear form fields
     } catch (err) {
-      console.error('Connect error:', err);
-      alert('Failed to send request');
+      console.error('Error posting question:', err);
+      alert('Failed to post question');
     }
   };
 
-  const handleAccept = async (requesterId) => {
+  const handleAnswerQuestion = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post(
-        'https://skillconnect-server.onrender.com/api/users/accept',
-        { requesterId },
+      const token = localStorage.getItem('token');
+      const res = await axios.post(
+        `http://localhost:5000/api/questions/${questionId}/answer`,
+        { text: answerText },
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert('Request accepted!');
-      //window.location.reload();
+      setQuestions(questions.map((q) =>
+        q._id === questionId ? res.data : q
+      ));
+      setAnswerText(''); // Clear answer text
+      setQuestionId(null); // Reset questionId after answering
     } catch (err) {
-      console.error('Accept error:', err);
-      alert('Failed to accept request');
+      console.error('Error answering question:', err);
+      alert('Failed to answer question');
     }
   };
 
-  const handleReject = async (requesterId) => {
-    try {
-      alert(`Rejected request from ${requesterId}`);
-    } catch (err) {
-      console.error('Reject error:', err);
-      alert('Failed to reject request');
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (!currentUser) return <p>User not found</p>;
+  if (loading) return <p className="text-center text-xl">Loading...</p>;
+  if (!currentUser) return <p className="text-center text-xl">User not found</p>;
 
   return (
     <>
       <NavbarLoggedIn />
-      <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Welcome, {currentUser.name}</h1>
-        <p><strong>Email:</strong> {currentUser.email}</p>
-        <p><strong>Bio:</strong> {currentUser.bio}</p>
 
-        {/* 👥 Current Connections */}
-        <div className="mt-6">
-          <h2 className="text-2xl font-semibold mb-2">Your Connections</h2>
-          {connections.length === 0 ? (
-            <p>No connections yet</p>
+      <div className="container mx-auto p-6">
+        {/* Logout and Links */}
+        <div className="flex justify-end space-x-4 mb-8">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200"
+          >
+            Log Out
+          </button>
+          <a
+            href="/userconnections"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+          >
+            User Connections
+          </a>
+          <a
+            href="/allusers"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
+          >
+            All Users
+          </a>
+        </div>
+
+        {/* Profile Information */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800">Welcome, {currentUser.name}</h1>
+          <p className="text-lg text-gray-600">{currentUser.email}</p>
+          <p className="text-lg text-gray-600 mt-2">{currentUser.bio}</p>
+        </div>
+
+        {/* Post a New Question */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Post a New Question</h2>
+          <form onSubmit={handlePostQuestion} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Title"
+              value={newQuestion.title}
+              onChange={(e) => setNewQuestion({ ...newQuestion, title: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              placeholder="Body"
+              value={newQuestion.body}
+              onChange={(e) => setNewQuestion({ ...newQuestion, body: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              placeholder="Tags"
+              value={newQuestion.tags}
+              onChange={(e) => setNewQuestion({ ...newQuestion, tags: e.target.value })}
+              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
+            >
+              Post Question
+            </button>
+          </form>
+        </div>
+
+        {/* Display Posted Questions */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Questions</h2>
+          {questions.length === 0 ? (
+            <p>No questions yet</p>
           ) : (
-            <ul className="list-disc ml-5">
-              {connections.map(u => (
-                <li key={u._id}>{u.name} ({u.email})</li>
+            <ul className="space-y-4">
+              {questions.map((question) => (
+                <li key={question._id} className="border p-4 rounded-lg shadow-sm bg-white">
+                  <h3 className="text-xl font-semibold text-gray-800">{question.title}</h3>
+                  <p className="mt-2 text-gray-700">{question.body}</p>
+                  <div className="mt-2 text-sm text-gray-600">
+                    <strong>Tags:</strong> {question.tags.join(', ')}
+                  </div>
+                  <button
+                    onClick={() => setQuestionId(question._id)}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
+                  >
+                    Answer
+                  </button>
+
+                  {/* Answer Question Form */}
+                  {questionId === question._id && (
+                    <form onSubmit={handleAnswerQuestion} className="mt-4 space-y-4">
+                      <textarea
+                        placeholder="Your answer"
+                        value={answerText}
+                        onChange={(e) => setAnswerText(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition duration-200"
+                      >
+                        Submit Answer
+                      </button>
+                    </form>
+                  )}
+                </li>
               ))}
             </ul>
           )}
         </div>
-
-        {/* 👤 Explore Users */}
-        <h2 className="text-2xl font-semibold mt-10 mb-4">Explore Users</h2>
-        <div className="space-y-4">
-          {allUsers
-            .filter(user =>
-              user._id !== currentUser._id &&
-              !connections.some(conn => conn._id === user._id)
-            )
-            .map(user => {
-              const hasSentRequest = user.connectionRequests?.includes(currentUser._id);
-              const hasReceivedRequest = currentUser.connectionRequests?.includes(user._id);
-
-              return (
-                <div key={user._id} className="border p-4 rounded shadow">
-                  <h3 className="text-xl font-semibold">{user.name}</h3>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Bio:</strong> {user.bio}</p>
-
-                  {hasSentRequest ? (
-                    <span className="text-yellow-500 font-medium">🕓 Pending Request</span>
-                  ) : hasReceivedRequest ? (
-                    <div className="mt-2 space-x-2">
-                      <button
-                        onClick={() => handleAccept(user._id)}
-                        className="px-3 py-1 bg-green-600 text-white rounded"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => handleReject(user._id)}
-                        className="px-3 py-1 bg-gray-500 text-white rounded"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => handleConnect(user._id)}
-                      className="mt-2 px-3 py-1 bg-blue-500 text-white rounded"
-                    >
-                      Connect
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="mt-10 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Logout
-        </button>
       </div>
     </>
   );
 };
 
 export default Profile;
+
+
+
