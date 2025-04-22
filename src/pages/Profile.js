@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavbarLoggedIn from '../components/NavbarLoggedIn';
+import LoadingSpinnerWithPercentage from '../components/LoadingSpinnerWithPercentage'
 
 const Profile = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -111,7 +112,8 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <p className="text-center text-xl">Loading...</p>;
+  //if (loading) return <p className="text-center text-xl">Loading...</p>;
+  if (loading) return <LoadingSpinnerWithPercentage />;
   if (!currentUser) return <p className="text-center text-xl">User not found</p>;
 
   return (

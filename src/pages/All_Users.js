@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavbarLoggedIn from '../components/NavbarLoggedIn';
+import LoadingSpinnerWithPercentage from '../components/LoadingSpinnerWithPercentage'
 
 const All_Users = () => {
     const [allUsers, setAllUsers] = useState([]);
@@ -129,7 +130,9 @@ const All_Users = () => {
         );
     });
 
-    if (loading) return <p>Loading...</p>;
+    //if (loading) return <p>Loading...</p>;
+    if (loading) return <LoadingSpinnerWithPercentage />;
+
     if (!currentUser) return <p>User not found</p>;
 
     return (
