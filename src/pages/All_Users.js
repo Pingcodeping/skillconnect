@@ -24,6 +24,9 @@ const All_Users = () => {
             navigate('/login');
             return;
         }
+        const handlebacktoprofile = () => {
+            navigate('/profile');
+          };
 
         const fetchData = async () => {
             try {
@@ -133,9 +136,9 @@ const All_Users = () => {
             <NavbarLoggedIn />
             <div className="p-8">
                 <div className="mb-6">
-                    <a href="/profile" className="text-blue-500 hover:text-blue-700 font-semibold">
+                    <button handlebacktoprofile className="text-blue-500 hover:text-blue-700 font-semibold">
                         &larr; Back to Profile
-                    </a>
+                    </button>
                 </div>
 
 

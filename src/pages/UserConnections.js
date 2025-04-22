@@ -18,6 +18,9 @@ const UserConnections = () => {
     const [pendingRequests, setPendingRequests] = useState([]);
 
     const navigate = useNavigate();
+    const handlebacktoprofile = () => {
+        navigate('/profile');
+      };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -81,9 +84,9 @@ const UserConnections = () => {
             <div className="p-8">
                 {/* Back Button */}
                 <div className="mb-6">
-                    <a href="/profile" className="text-blue-500 hover:text-blue-700 font-semibold">
+                    <button onClick={handlebacktoprofile}  className="text-blue-500 hover:text-blue-700 font-semibold">
                         &larr; Back to Profile
-                    </a>
+                    </button>
                 </div>
                 {/* Search Input */}
                 <div className="mb-4">
