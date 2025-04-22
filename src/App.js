@@ -9,6 +9,7 @@ import QA from './pages/QA';
 import Navbar from './components/Navbar'; // Import Navbar
 import UserConnections from './pages/UserConnections';
 import All_Users from './pages/All_Users';
+import UserQuestions from './pages/UserQuestions';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/userconnections" element={<UserConnections />}/>
         <Route path="/backtoprofile" element={<Profile />} />
         <Route path="/allusers" element={<All_Users/>}/>
+        <Route path="/userquestions" element={<UserQuestions/>}/>
       </Routes>
     </Router>
   );

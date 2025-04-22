@@ -22,8 +22,10 @@ const Profile = () => {
   const handleAllUsers = () =>{
     navigate('/allusers');
   };
+  const handleUserQuestions = () =>{
+    navigate('/userquestions');
+  };
   
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -33,23 +35,23 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
+        const meRes = await axios.get('http://localhost:5000/api/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(meRes.data);
 
         const connectionsRes = await axios.get(
-          `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+          `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
         );
         setConnections(connectionsRes.data);
 
-        const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
+        const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAllUsers(allUsersRes.data);
 
         // Fetch questions posted by the current user
-        const questionsRes = await axios.get('https://skillconnect-server.onrender.com/api/questions', {
+        const questionsRes = await axios.get('http://localhost:5000/api/questions', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setQuestions(questionsRes.data);
@@ -76,7 +78,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        'https://skillconnect-server.onrender.com/api/questions',
+        'http://localhost:5000/api/questions',
         { ...newQuestion },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -95,7 +97,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        `https://skillconnect-server.onrender.com/api/questions/${questionId}/answer`,
+        `http://localhost:5000/api/questions/${questionId}/answer`,
         { text: answerText },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -112,7 +114,6 @@ const Profile = () => {
     }
   };
 
-  //if (loading) return <p className="text-center text-xl">Loading...</p>;
   if (loading) return <LoadingSpinnerWithPercentage />;
   if (!currentUser) return <p className="text-center text-xl">User not found</p>;
 
@@ -122,26 +123,33 @@ const Profile = () => {
 
       <div className="container mx-auto p-6">
         {/* Logout and Links */}
-        <div className="flex justify-end space-x-4 mb-8">
+        <div className="flex justify-end space-x-1 mb-3">
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200"
+            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200"
           >
             Log Out
           </button>
           <button
            // href="/userconnections"
            onClick={handleUserConnection}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+            className="px-1 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
           >
             User Connections
           </button>
           <button
            // href="/allusers"
            onClick={handleAllUsers}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
+            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
           >
             All Users
+          </button>
+          <button
+           // href="/allusers"
+           onClick={handleUserQuestions}
+            className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
+          >
+            User Questions
           </button>
         </div>
 

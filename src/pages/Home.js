@@ -43,7 +43,7 @@ const Home = () => {
     const fetchQuestions = async () => {
       try {
         // const response = await axios.get('http://localhost:5000/api/questions/getAllQuestionsWithAnswers');
-        const response = await axios.get('https://skillconnect-server.onrender.com/api/questions/getAllQuestionsWithAnswers');
+        const response = await axios.get('http://localhost:5000/api/questions/getAllQuestionsWithAnswers');
         setQuestions(response.data); // Store questions in the state
       } catch (err) {
         setError('Error fetching questions and answers');
