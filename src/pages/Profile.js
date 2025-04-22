@@ -15,6 +15,11 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
+  const handleUserConnection = () => {
+    navigate('/userconnections');
+  };
+  
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -119,12 +124,13 @@ const Profile = () => {
           >
             Log Out
           </button>
-          <a
-            href="/userconnections"
+          <button
+           // href="/userconnections"
+           onClick={handleUserConnection}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
           >
             User Connections
-          </a>
+          </button>
           <a
             href="/allusers"
             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
