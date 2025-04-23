@@ -20,7 +20,7 @@ const All_Users = () => {
     const navigate = useNavigate();
     const handlebacktoprofile = () => {
         navigate('/profile');
-      };
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -28,32 +28,32 @@ const All_Users = () => {
             navigate('/login');
             return;
         }
-        
+
 
         const fetchData = async () => {
             try {
-                // const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
-                const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
+                // const meRes = await axios.get('http://localhost:5000/api/users/me', {
+                const meRes = await axios.get('http://localhost:5000/api/users/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCurrentUser(meRes.data);
 
                 // const connectionsRes = await axios.get(
-                //     `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+                //     `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
                 const connectionsRes = await axios.get(
-                    `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+                    `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
                 );
                 setConnections(connectionsRes.data);
 
-                // const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
-                const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
+                // const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
+                const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setAllUsers(allUsersRes.data);
 
                 // Fetch questions posted by the current user
-                // const questionsRes = await axios.get('https://skillconnect-server.onrender.com/api/questions', {
-                const questionsRes = await axios.get('https://skillconnect-server.onrender.com/api/questions', {
+                // const questionsRes = await axios.get('http://localhost:5000/api/questions', {
+                const questionsRes = await axios.get('http://localhost:5000/api/questions', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setQuestions(questionsRes.data);
@@ -78,9 +78,9 @@ const All_Users = () => {
     const handleConnect = async (targetId) => {
         try {
             // await axios.post(
-            //     'https://skillconnect-server.onrender.com/api/users/connect',
+            //     'http://localhost:5000/api/users/connect',
             await axios.post(
-                'https://skillconnect-server.onrender.com/api/users/connect',
+                'http://localhost:5000/api/users/connect',
                 { targetId },
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -96,16 +96,19 @@ const All_Users = () => {
 
     const handleAccept = async (requesterId) => {
         try {
-            // await axios.post(
-            //     'https://skillconnect-server.onrender.com/api/users/accept',
             await axios.post(
-                'https://skillconnect-server.onrender.com/api/users/accept',
+                'http://localhost:5000/api/users/accept',
                 { requesterId },
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
                 }
             );
             alert('Request accepted!');
+            // 🔄 Update connections and remove the accepted user from filtered list
+            setConnections((prev) => [...prev, allUsers.find(user => user._id === requesterId)]);
+            // Optionally remove from allUsers list if you want them gone completely
+            setAllUsers((prev) => prev.filter((user) => user._id !== requesterId));
+
         } catch (err) {
             console.error('Accept error:', err);
             alert('request accepted already or Failed to accept request');
@@ -140,7 +143,7 @@ const All_Users = () => {
             <NavbarLoggedIn />
             <div className="p-8">
                 <div className="mb-6">
-                    <button onClick={handlebacktoprofile}  className="text-blue-500 hover:text-blue-700 font-semibold">
+                    <button onClick={handlebacktoprofile} className="text-blue-500 hover:text-blue-700 font-semibold">
                         &larr; Back to Profile
                     </button>
                 </div>
@@ -160,60 +163,63 @@ const All_Users = () => {
                 {/* 👥 Explore Users */}
                 <div className="mt-6">
                     <h2 className="text-2xl font-semibold mb-4">Explore Users</h2>
-                    {filteredUsers
-                        .filter(
-                            (user) =>
-                                user._id !== currentUser._id &&
-                                !connections.some((conn) => conn._id === user._id)
-                        )
-                        .map((user) => {
-                            const hasReceivedRequest = currentUser.connectionRequests?.includes(user._id);
-                            const isPending = pendingRequests.includes(user._id);
-                            const hasSentRequest = user.connectionRequests?.includes(currentUser._id) || isPending;
+                    <div className="max-h-[600px] overflow-y-auto pr-2 space-y-4">
+                        {filteredUsers
+                            .filter(
+                                (user) =>
+                                    user._id !== currentUser._id &&
+                                    !connections.some((conn) => conn._id === user._id)
+                            )
+                            .map((user) => {
+                                const hasReceivedRequest = currentUser.connectionRequests?.includes(user._id);
+                                const isPending = pendingRequests.includes(user._id);
+                                const hasSentRequest = user.connectionRequests?.includes(currentUser._id) || isPending;
 
-                            return (
-                                <div
-                                    key={user._id}
-                                    className="border p-4 rounded-lg shadow-md mb-4 hover:bg-gray-100 transition-all"
-                                >
-                                    <h3 className="text-xl font-semibold">{user.name}</h3>
-                                    <p className="text-sm text-gray-600">
-                                        <strong>Email:</strong> {user.email}
-                                    </p>
-                                    <p className="text-sm text-gray-600">
-                                        <strong>Bio:</strong> {user.bio}
-                                    </p>
+                                return (
+                                    <div
+                                        key={user._id}
+                                        className="border p-4 rounded-lg shadow-md hover:bg-gray-100 transition-all"
+                                    >
+                                        <h3 className="text-xl font-semibold">{user.name}</h3>
+                                        <p className="text-sm text-gray-600">
+                                            <strong>Email:</strong> {user.email}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            <strong>Bio:</strong> {user.bio}
+                                        </p>
 
-                                    {/* Connection Actions */}
-                                    {hasSentRequest ? (
-                                        <span className="text-yellow-500 font-medium">🕓 Pending Request</span>
-                                    ) : hasReceivedRequest ? (
-                                        <div className="mt-2 space-x-2">
+                                        {/* Connection Actions */}
+                                        {hasSentRequest ? (
+                                            <span className="text-yellow-500 font-medium">🕓 Pending Request</span>
+                                        ) : hasReceivedRequest ? (
+                                            <div className="mt-2 space-x-2">
+                                                <button
+                                                    onClick={() => handleAccept(user._id)}
+                                                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                                                >
+                                                    Accept
+                                                </button>
+                                                <button
+                                                    onClick={() => handleReject(user._id)}
+                                                    className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        ) : (
                                             <button
-                                                onClick={() => handleAccept(user._id)}
-                                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                                                onClick={() => handleConnect(user._id)}
+                                                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                                             >
-                                                Accept
+                                                Connect
                                             </button>
-                                            <button
-                                                onClick={() => handleReject(user._id)}
-                                                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleConnect(user._id)}
-                                            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                        >
-                                            Connect
-                                        </button>
-                                    )}
-                                </div>
-                            );
-                        })}
+                                        )}
+                                    </div>
+                                );
+                            })}
+                    </div>
                 </div>
+
             </div>
         </>
     );

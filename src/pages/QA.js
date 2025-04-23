@@ -1,21 +1,34 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import axios from 'axios';
 
-const Home = () => {
+// src/pages/AllQuestions.js
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import LoadingSpinnerWithPercentage from '../components/LoadingSpinnerWithPercentage';
+import NavbarLoggedIn from '../components/NavbarLoggedIn';
+
+const AllQuestions = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [answerText, setAnswerText] = useState('');
+  const [questionId, setQuestionId] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
-  // Fetch all questions with answers when the component mounts
+  const handleBackToHome = () => {
+    navigate('/');
+  };
+
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('https://skillconnect-server.onrender.com/api/questions/getAllQuestionsWithAnswers');
-        setQuestions(response.data); // Store questions in the state
+        const res = await axios.get('http://localhost:5000/api/questions');
+        setQuestions(res.data);
       } catch (err) {
-        setError('Error fetching questions and answers');
+        console.error('Error fetching questions:', err);
       } finally {
         setLoading(false);
       }
@@ -24,48 +37,110 @@ const Home = () => {
     fetchQuestions();
   }, []);
 
+  const handleAnswerSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("You must be logged in to answer.");
+        navigate('/login');
+        return;
+      }
+
+      const res = await axios.post(
+        `http://localhost:5000/api/questions/${questionId}/answer`,
+        { text: answerText },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setQuestions((prev) =>
+        prev.map((q) => (q._id === questionId ? res.data : q))
+      );
+      setAnswerText('');
+      setQuestionId(null);
+    } catch (err) {
+      console.error('Error submitting answer:', err);
+      alert('Failed to submit answer');
+    }
+  };
+
+  if (loading) return <LoadingSpinnerWithPercentage />;
+
   return (
     <>
-      <Navbar />
-      
-        {/* Display Questions and Answers */}
-        <div className="mt-8 w-full max-w-4xl">
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : (
-            <div>
-              {questions.length > 0 ? (
-                questions.map((question) => (
-                  <div key={question._id} className="mb-6 p-4 border-b-2">
-                    <h2 className="text-2xl font-semibold">{question.title}</h2>
-                    <p>{question.body}</p>
-                    <p className="text-sm text-gray-400">Posted by: {question.user ? question.user.name : 'Anonymous'}</p>
-                    <p className="text-sm text-gray-500">Tags: {question.tags.join(', ')}</p>
-                    <div className="mt-4">
-                      {question.answers.length > 0 ? (
-                        question.answers.map((answer, index) => (
-                          <div key={index} className="mt-2 p-4 border-l-4 border-indigo-500">
-                            <p>{answer.text}</p>
-                            <p className="text-sm text-gray-400">Answered by: {answer.user ? answer.user.name : 'Anonymous'}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="mt-2 text-gray-500">No answers yet</p>
-                      )}
-                    </div>
+      {/* <NavbarLoggedIn/> */}
+      <div className="container mx-auto p-6">
+        {/* <button
+          onClick={handleBackToHome}
+          className="text-blue-600 hover:text-blue-800 font-medium transition duration-200"
+        >
+          &larr; Back
+        </button> */}
+        <h1 className="text-3xl font-bold mb-6 text-center">All Questions</h1>
+
+        {questions.length === 0 ? (
+          <p>No questions available</p>
+        ) : (
+          <ul className="space-y-6">
+            {questions.map((q) => (
+              <li key={q._id} className="p-5 border rounded-md shadow bg-white">
+                <h2 className="text-xl font-semibold text-gray-800">{q.title}</h2>
+                <p className="text-gray-700 my-2">{q.body}</p>
+                <p className="text-sm text-gray-600">
+                  <strong>Tags:</strong> {q.tags.join(', ')}
+                </p>
+
+                {/* Display answers */}
+                {q.answers?.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <strong className="text-gray-800">Answers:</strong>
+                    {q.answers.map((ans, i) => (
+                      <p key={i} className="text-gray-700 border-l-4 border-blue-500 pl-3">
+                        {ans.text}
+                      </p>
+                    ))}
                   </div>
-                ))
-              ) : (
-                <p>No questions available.</p>
-              )}
-            </div>
-          )}
-        </div>
-      
+                )}
+
+                {/* Answering Form */}
+                {isLoggedIn ? (
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setQuestionId(q._id)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                    >
+                      Answer
+                    </button>
+
+                    {questionId === q._id && (
+                      <form onSubmit={handleAnswerSubmit} className="mt-4">
+                        <textarea
+                          value={answerText}
+                          onChange={(e) => setAnswerText(e.target.value)}
+                          placeholder="Write your answer..."
+                          className="w-full p-2 border border-gray-300 rounded-md mb-2"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                        >
+                          Submit Answer
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-4 text-red-600">Log in to answer this question.</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </>
   );
 };
 
-export default Home;
+export default AllQuestions;
