@@ -25,7 +25,7 @@ const AllQuestions = () => {
 
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get('https://skillconnect-server.onrender.com/api/questions');
+        const res = await axios.get(' https://skillconnect-server.onrender.com/api/questions');
         setQuestions(res.data);
       } catch (err) {
         console.error('Error fetching questions:', err);
@@ -48,7 +48,7 @@ const AllQuestions = () => {
       }
 
       const res = await axios.post(
-        `https://skillconnect-server.onrender.com/api/questions/${questionId}/answer`,
+        ` https://skillconnect-server.onrender.com/api/questions/${questionId}/answer`,
         { text: answerText },
         {
           headers: { Authorization: `Bearer ${token}` },

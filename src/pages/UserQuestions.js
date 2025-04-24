@@ -32,7 +32,7 @@ export default function UserQuestions() {
       const fetchUserQuestions = async () => {
         try {
           const res = await axios.get(
-            `https://skillconnect-server.onrender.com/api/questions/user/${decodedUserId}`,
+            ` https://skillconnect-server.onrender.com/api/questions/user/${decodedUserId}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
 
