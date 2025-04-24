@@ -11,6 +11,7 @@ import UserConnections from './pages/UserConnections';
 import All_Users from './pages/All_Users';
 import UserQuestions from './pages/UserQuestions';
 import PostQuestions from './pages/PostQuestions';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,6 +42,7 @@ const App = () => {
         <Route path="/allusers" element={<All_Users/>}/>
         <Route path="/userquestions" element={<UserQuestions/>}/>
         <Route path="/postquestions" element={<PostQuestions/>}/>
+        <Route path="/userprofile" element={<UserProfile/>} />
       </Routes>
     </Router>
   );

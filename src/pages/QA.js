@@ -25,7 +25,7 @@ const AllQuestions = () => {
 
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get(' https://skillconnect-server.onrender.com/api/questions');
+        const res = await axios.get('http://localhost:5000/api/questions');
         setQuestions(res.data);
       } catch (err) {
         console.error('Error fetching questions:', err);
@@ -48,7 +48,7 @@ const AllQuestions = () => {
       }
 
       const res = await axios.post(
-        ` https://skillconnect-server.onrender.com/api/questions/${questionId}/answer`,
+        `http://localhost:5000/api/questions/${questionId}/answer`,
         { text: answerText },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -94,15 +94,19 @@ const AllQuestions = () => {
 
                 {/* Display answers */}
                 {q.answers?.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <strong className="text-gray-800">Answers:</strong>
-                    {q.answers.map((ans, i) => (
-                      <p key={i} className="text-gray-700 border-l-4 border-blue-500 pl-3">
-                        {ans.text}
-                      </p>
-                    ))}
-                  </div>
-                )}
+  <div className="mt-4 space-y-2">
+    <strong className="text-gray-800">Answers:</strong>
+    {q.answers.map((ans, i) => (
+      <div key={i} className="text-gray-700 border-l-4 border-blue-500 pl-3">
+        <p>{ans.text}</p>
+        {ans.user && (
+          <p className="text-sm text-gray-500 italic">— {ans.user.name}</p> 
+        )}
+      </div>
+    ))}
+  </div>
+)}
+
 
                 {/* Answering Form */}
                 {isLoggedIn ? (

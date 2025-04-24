@@ -39,27 +39,27 @@
 
 //     const fetchData = async () => {
 //       try {
-//         const meRes = await axios.get(' https://skillconnect-server.onrender.com/api/users/me', {
+//         const meRes = await axios.get('http://localhost:5000/api/users/me', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setCurrentUser(meRes.data);
 
 //         const connectionsRes = await axios.get(
-//           ` https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+//           `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
 //         );
 //         setConnections(connectionsRes.data);
 
-//         const allUsersRes = await axios.get(' https://skillconnect-server.onrender.com/api/users/getAllUsers', {
+//         const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setAllUsers(allUsersRes.data);
 
-//         const questionsRes = await axios.get(' https://skillconnect-server.onrender.com/api/questions', {
+//         const questionsRes = await axios.get('http://localhost:5000/api/questions', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setQuestions(questionsRes.data);
 
-//         const suggestedRes = await axios.post(' https://skillconnect-server.onrender.com/api/users/recommend-connections', {
+//         const suggestedRes = await axios.post('http://localhost:5000/api/users/recommend-connections', {
 //           userId: meRes.data._id,
 //         });
 //         setSuggestedUsers(suggestedRes.data.suggestedUsers || []);
@@ -147,10 +147,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Users, UserPlus, HelpCircle, Pencil } from 'lucide-react';
+import { LogOut, Users, UserPlus, HelpCircle, Pencil,User  } from 'lucide-react';
 import LoadingSpinnerWithPercentage from '../components/LoadingSpinnerWithPercentage';
 import NavbarLoggedIn from '../components/NavbarLoggedIn';
-import QA from '../pages/QA';
+import QA from './QA';
 
 const Profile = () => {
   const [allUsers, setAllUsers] = useState([]);
@@ -171,6 +171,7 @@ const Profile = () => {
   const handleAllUsers = () => navigate('/allusers');
   const handleUserQuestions = () => navigate('/userquestions');
   const handlePostQuestions = () => navigate('/postquestions');
+  const handleProfile = () => navigate('/userprofile')
 
   // Fetch user details, connections, all users, and suggestions
   useEffect(() => {
@@ -182,23 +183,23 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const meRes = await axios.get(' https://skillconnect-server.onrender.com/api/users/me', {
+        const meRes = await axios.get('http://localhost:5000/api/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(meRes.data);
 
         const connectionsRes = await axios.get(
-          ` https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+          `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
         );
         setConnections(connectionsRes.data);
 
-        const allUsersRes = await axios.get(' https://skillconnect-server.onrender.com/api/users/getAllUsers', {
+        const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAllUsers(allUsersRes.data);
 
         // Get suggested users for connections
-        const suggestedRes = await axios.post(' https://skillconnect-server.onrender.com/api/users/recommend-connections', {
+        const suggestedRes = await axios.post('http://localhost:5000/api/users/recommend-connections', {
           userId: meRes.data._id,
         });
         setSuggestedUsers(suggestedRes.data.suggestedUsers || []);
@@ -223,14 +224,16 @@ const Profile = () => {
     { label: 'All Users', icon: <UserPlus />, onClick: handleAllUsers, bg: 'bg-green-100' },
     { label: 'User Questions', icon: <HelpCircle />, onClick: handleUserQuestions, bg: 'bg-purple-100' },
     { label: 'Post Question', icon: <Pencil />, onClick: handlePostQuestions, bg: 'bg-yellow-100' },
+    { label: 'Profile', icon: <User  />, onClick: handleProfile, bg: 'bg-orange-100' },
     { label: 'Log Out', icon: <LogOut />, onClick: handleLogout, bg: 'bg-red-100' },
+    
   ];
 
   const handleConnect = async (targetId) => {
     try {
       // Send connection request
       await axios.post(
-        ' https://skillconnect-server.onrender.com/api/users/connect',
+        'http://localhost:5000/api/users/connect',
         { targetId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -247,7 +250,7 @@ const Profile = () => {
   const handleAccept = async (requesterId) => {
     try {
       await axios.post(
-        ' https://skillconnect-server.onrender.com/api/users/accept',
+        'http://localhost:5000/api/users/accept',
         { requesterId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -283,7 +286,7 @@ const Profile = () => {
         </div>
        
         {/* Suggested Users Section */}
-        <div className="mb-10">
+        <div className=" grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold">Suggested Connections</h2><br></br>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {suggestedUsers.map((user) => (
