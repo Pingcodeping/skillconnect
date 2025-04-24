@@ -12,7 +12,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/users/register', form);
+      await axios.post('https://skillconnect-server.onrender.com/api/users/register', form);
       setMessage('Registration successful! You can now login.');
       setForm({ name: '', email: '', password: '', bio: '', skills: '' });
     } catch (err) {

@@ -22,7 +22,7 @@ export default function UserProfile() {
 
         const fetchData = async () => {
             try {
-                const meRes = await axios.get('http://localhost:5000/api/users/me', {
+                const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCurrentUser(meRes.data);

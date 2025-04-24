@@ -39,27 +39,27 @@
 
 //     const fetchData = async () => {
 //       try {
-//         const meRes = await axios.get('http://localhost:5000/api/users/me', {
+//         const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setCurrentUser(meRes.data);
 
 //         const connectionsRes = await axios.get(
-//           `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+//           `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
 //         );
 //         setConnections(connectionsRes.data);
 
-//         const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
+//         const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setAllUsers(allUsersRes.data);
 
-//         const questionsRes = await axios.get('http://localhost:5000/api/questions', {
+//         const questionsRes = await axios.get('https://skillconnect-server.onrender.com/api/questions', {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         setQuestions(questionsRes.data);
 
-//         const suggestedRes = await axios.post('http://localhost:5000/api/users/recommend-connections', {
+//         const suggestedRes = await axios.post('https://skillconnect-server.onrender.com/api/users/recommend-connections', {
 //           userId: meRes.data._id,
 //         });
 //         setSuggestedUsers(suggestedRes.data.suggestedUsers || []);
@@ -183,23 +183,23 @@ const Profile = () => {
 
     const fetchData = async () => {
       try {
-        const meRes = await axios.get('http://localhost:5000/api/users/me', {
+        const meRes = await axios.get('https://skillconnect-server.onrender.com/api/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentUser(meRes.data);
 
         const connectionsRes = await axios.get(
-          `http://localhost:5000/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
+          `https://skillconnect-server.onrender.com/api/users/getconnectionsforuser/?userId=${meRes.data._id}`
         );
         setConnections(connectionsRes.data);
 
-        const allUsersRes = await axios.get('http://localhost:5000/api/users/getAllUsers', {
+        const allUsersRes = await axios.get('https://skillconnect-server.onrender.com/api/users/getAllUsers', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAllUsers(allUsersRes.data);
 
         // Get suggested users for connections
-        const suggestedRes = await axios.post('http://localhost:5000/api/users/recommend-connections', {
+        const suggestedRes = await axios.post('https://skillconnect-server.onrender.com/api/users/recommend-connections', {
           userId: meRes.data._id,
         });
         setSuggestedUsers(suggestedRes.data.suggestedUsers || []);
@@ -233,7 +233,7 @@ const Profile = () => {
     try {
       // Send connection request
       await axios.post(
-        'http://localhost:5000/api/users/connect',
+        'https://skillconnect-server.onrender.com/api/users/connect',
         { targetId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -250,7 +250,7 @@ const Profile = () => {
   const handleAccept = async (requesterId) => {
     try {
       await axios.post(
-        'http://localhost:5000/api/users/accept',
+        'https://skillconnect-server.onrender.com/api/users/accept',
         { requesterId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
